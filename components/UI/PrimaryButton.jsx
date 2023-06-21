@@ -18,15 +18,17 @@ export default function PrimaryButton({btnText, onPress, children }) {
 
 const styles = StyleSheet.create({
   btnOuterContainer: {
-    borderRadius: 50,
-    overflow: 'hidden',
+    alignItems: 'center'
+    // borderRadius: 50,
+    // overflow: 'hidden',
   },
   btninnerContainer: {
-    width: 100,
+    width: 140,
     backgroundColor: Colors.primary500,
     paddingVertical: 8,
     paddingHorizontal: 16,
     elevation: 2,
+    borderRadius: 50
   },
   btnText: {
     textAlign: "center",

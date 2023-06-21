@@ -18,6 +18,7 @@ SplashScreen.preventAutoHideAsync();
 export default function App() {
   const [num, setNum] = useState(null);
   const [gameOver, setGameOver] = useState(false);
+  const [gameRounds, setGameRounds] = useState([]);
 
   const [appIsReady, setAppIsReady] = useState(false);
 
@@ -37,6 +38,12 @@ export default function App() {
     prepare();
   }, []);
 
+  const newGameHandler = () => {
+    setNum(null);
+    setGameOver(false);
+    setGameRounds([]);
+  };
+
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
       await SplashScreen.hideAsync();
@@ -48,9 +55,18 @@ export default function App() {
   }
 
   const screen = gameOver ? (
-    <GameOverScreen />
+    <GameOverScreen
+      reload={newGameHandler}
+      userNumber={num}
+      rounds={gameRounds}
+    />
   ) : num ? (
-    <GameScreen choosedNum={num} won={setGameOver} />
+    <GameScreen
+      choosedNum={num}
+      won={setGameOver}
+      setGameRounds={setGameRounds}
+      rounds={gameRounds}
+    />
   ) : (
     <StartGameScreen stat={setNum} showGameOver={setGameOver} />
   );
@@ -66,7 +82,9 @@ export default function App() {
         style={styles.rootScreen}
         imageStyle={styles.backgroundImage}
       >
-        <SafeAreaView style={styles.rootScreen} onLayout={onLayoutRootView}>{screen}</SafeAreaView>
+        <SafeAreaView style={styles.rootScreen} onLayout={onLayoutRootView}>
+          {screen}
+        </SafeAreaView>
       </ImageBackground>
     </LinearGradient>
   );

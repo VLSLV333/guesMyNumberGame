@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, Text, FlatList } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
 
@@ -11,6 +11,8 @@ import InstructionText from "../components/UI/InstructionText";
 import NumberContainer from "../components/game/NumberContainer";
 
 import Title from "../components/UI/Title";
+
+import GuessLogItem from "../components/game/GuessLogItem";
 
 function generateRandomBetween(min, max, exclude) {
   const rdnNum = Math.floor(Math.random() * (max - min)) + min;
@@ -25,12 +27,15 @@ function generateRandomBetween(min, max, exclude) {
 let minBoundary = 1;
 let maxBoundary = 100;
 
-// let answer = null
-
-export default function GameScreen({ choosedNum, won }) {
+export default function GameScreen({ choosedNum, won, setGameRounds, rounds }) {
   const initialGuess = generateRandomBetween(1, 100, choosedNum);
 
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
+
+  useEffect(() => {
+    minBoundary = 1;
+    maxBoundary = 100;
+  }, []);
 
   useEffect(() => {
     if (currentGuess === choosedNum) {
@@ -55,11 +60,7 @@ export default function GameScreen({ choosedNum, won }) {
     } else if (direction === "lower") {
       maxBoundary = currentGuess;
     }
-
-    console.log(minBoundary);
-    console.log(maxBoundary);
-    console.log(currentGuess);
-
+    setGameRounds((prevState) => [currentGuess, ...prevState]);
     const newRandonNum = generateRandomBetween(
       minBoundary,
       maxBoundary,
@@ -76,16 +77,20 @@ export default function GameScreen({ choosedNum, won }) {
         <InstructionText style={styles.chooseText} txt="Higher or lower?" />
         <View style={styles.btnContainer}>
           <PrimaryButton onPress={() => nextGuessHandler("lower")}>
-            <Ionicons name="md-remove" size={24} color='white'/>
+            <Ionicons name="md-remove" size={24} color="white" />
           </PrimaryButton>
-          <PrimaryButton
-            onPress={() => nextGuessHandler("higher")}
-          >
-            <Ionicons name='md-add' size={24} color='white'/>
-            </PrimaryButton>
+          <PrimaryButton onPress={() => nextGuessHandler("higher")}>
+            <Ionicons name="md-add" size={24} color="white" />
+          </PrimaryButton>
         </View>
       </View>
-      {/* <View>Logs of guesses</View> */}
+      <FlatList
+        data={rounds}
+        keyExtractor={(item) => item}
+        renderItem={(itemData) => (
+            <GuessLogItem roundNumber={rounds.length - itemData.index} guess={itemData.item}/>
+        )}
+      />
     </View>
   );
 }
